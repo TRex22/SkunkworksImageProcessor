@@ -1209,5 +1209,103 @@ namespace ImageProcessor
                                      .ToArray();
             return files;
         }
+
+        public string[] LoadPatternData(string fileLocation)
+        {
+            String[] asciiFile;
+            int[] patternData;
+            String firstLine = null;
+            StringBuilder builder = new StringBuilder();
+
+            using (StreamReader sr = new StreamReader(fileLocation))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    //ConvertedImage ascii rb dimensions(height/width): 100 100
+                    String str = sr.ReadLine();
+                    if (firstLine == null)
+                    {
+                        firstLine = str;
+                        //ignore
+                        if (firstLine == null || !firstLine.Contains("Thread"))
+                        {
+                            throw new Exception("Wrong file type");
+                        }
+                    }
+                    else
+                    {
+                        if (str.Equals("\n"))
+                        {
+                            //new block
+                            builder.Append("\n");
+                        }
+                        else
+                        {
+                            builder.Append(str);
+                        }
+                    }
+                }
+            }
+
+            String file = builder.ToString();
+            asciiFile = file.Split('\n');
+            /*patternData = new int[asciiFile.Length];
+
+            for (int i = 0; i < asciiFile.Length; i++)
+            {
+                patternData[i] = Convert.ToInt32(asciiFile[i]);
+            }*/
+
+            return asciiFile;
+        }
+
+        //TODO make more general
+        //only 10 datapoints
+        /*  0 - Black
+        *   1 - Blue
+        *   2 - Grey
+        *   3 - Red
+        *   4 - Orange
+        *   5 - White
+        *   6 - Yellow
+        *   7 - Cyan
+        *   8 - Magenta
+        *   9 - Green
+        */
+        
+        public Bitmap MakeComparisonGraph(string[] data, int pixelSquareDensity)
+        {
+            int imageSize = pixelSquareDensity*10; //number of 
+            int imageHeight = pixelSquareDensity*100;
+            Bitmap graph = new Bitmap(imageSize, imageHeight);
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                foreach (char c in data[i])
+                {
+                    graph = ColourInBlock(graph, c, i, pixelSquareDensity, imageSize, imageHeight);
+                }
+            }
+
+            return graph;
+        }
+
+        enum Colours { Black, Blue, Grey, Red, Orange, White, Yellow, Cyan, Magenta, Green };
+        private Bitmap ColourInBlock(Bitmap graph, char currentChar, int currentRow, int pixelSquareDensity, int imageSize, int imageHeight)
+        {
+            int currentStartx = currentRow*pixelSquareDensity;
+
+            for (int i = 0; i < imageSize; i++)
+            {
+                for (int j = 0; j < pixelSquareDensity; j++)
+                {
+                    Colours colour = (Colours) Convert.ToInt32(currentChar);
+                    string strColour = colour.ToString();
+                    graph.SetPixel(currentStartx + i, currentRow + j, Color.FromName(strColour));
+                }
+            }
+
+            return graph;
+        }
     }
 }

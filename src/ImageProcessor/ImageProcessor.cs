@@ -163,6 +163,10 @@ namespace ImageProcessor
                 newArgs[0] = "compare";
                 throw new NotImplementedException(); //TODO implement batch compare
             }
+            else if (mainArg.ToLower().Equals("diagram") && !failDueToInputOutputMatch)
+            {
+                throw new NotImplementedException();
+            }
             else
             {
                 Console.WriteLine("Error: Missing Inputs In First Argument.");
@@ -338,6 +342,28 @@ namespace ImageProcessor
 
                 Helpers.CompareTwoImages(bmpImage1, bmpImage2);
             }
+            else if (args.Length > 0 && args[0].ToLower().Equals("diagram"))
+            {
+                //ImageProcessor diagram [input] [output foldername] [filename] bmp 100 <pixel square density>
+
+                var fileLocation = args[1];
+                var outputFolder = args[2];
+                var outputFilename = args[3];
+
+                string[] data = Helpers.LoadPatternData(fileLocation);
+                var bmpImage = Helpers.MakeComparisonGraph(data, Convert.ToInt32(args[5]));
+
+                if (bmpImage != null)
+                {
+                    //save as required format
+                    Helpers.SaveImage(bmpImage, "rgb", args[4], outputFolder, outputFilename);
+                    Console.WriteLine("Completed Operation, Graph Made.");
+                }
+                else
+                {
+                    Console.WriteLine("Error Occured Make Comparison Graph.");
+                }
+            }
             else
             {
                 Console.WriteLine("Error: Missing Inputs In First Argument.");
@@ -438,6 +464,8 @@ namespace ImageProcessor
                 "ImageProcessor crop [input filename and location] [output foldername] [filename] bmp 100 100 <(height width)> \n";
             helpText +=
                 "ImageProcessor compare [input filename and location of image 1] [input filename and location of image 2] \n";
+            helpText +=
+                "ImageProcessor diagram [input] [output foldername] [filename] bmp 100 <pixel square density> No Batching yet. \n";
             helpText += "ImageProcessor batch [input folder] [output folder] scale bmp 100 100 <(height width)> \n";
 
             Console.Out.WriteLine(helpText);

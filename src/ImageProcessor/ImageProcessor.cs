@@ -347,6 +347,7 @@ namespace ImageProcessor
                 //ImageProcessor diagram [input] [output foldername] [filename] bmp 100 <pixel square density>
 
                 var fileLocation = args[1];
+                Console.WriteLine(fileLocation);
                 var outputFolder = args[2];
                 var outputFilename = args[3];
 

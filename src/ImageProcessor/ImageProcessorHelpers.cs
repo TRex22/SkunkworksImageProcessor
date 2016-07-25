@@ -1234,7 +1234,7 @@ namespace ImageProcessor
                     }
                     else
                     {
-                        if (str.Equals("\n"))
+                        if (string.IsNullOrWhiteSpace(str))
                         {
                             //new block
                             builder.Append("\n");
@@ -1242,6 +1242,7 @@ namespace ImageProcessor
                         else
                         {
                             builder.Append(str);
+                            //Console.WriteLine(str);
                         }
                     }
                 }
@@ -1255,7 +1256,7 @@ namespace ImageProcessor
             {
                 patternData[i] = Convert.ToInt32(asciiFile[i]);
             }*/
-
+            
             return asciiFile;
         }
 
@@ -1272,7 +1273,7 @@ namespace ImageProcessor
         *   8 - Magenta
         *   9 - Green
         */
-        
+        enum Colours { Black, Blue, Grey, Red, Orange, White, Yellow, Cyan, Magenta, Green };
         public Bitmap MakeComparisonGraph(string[] data, int pixelSquareDensity)
         {
             int imageSize = pixelSquareDensity*10; //number of 
@@ -1281,27 +1282,18 @@ namespace ImageProcessor
 
             for (int i = 0; i < data.Length; i++)
             {
+                int count = 0;
+                //Console.WriteLine(data[i].Length);
                 foreach (char c in data[i])
                 {
-                    graph = ColourInBlock(graph, c, i, pixelSquareDensity, imageSize, imageHeight);
-                }
-            }
-
-            return graph;
-        }
-
-        enum Colours { Black, Blue, Grey, Red, Orange, White, Yellow, Cyan, Magenta, Green };
-        private Bitmap ColourInBlock(Bitmap graph, char currentChar, int currentRow, int pixelSquareDensity, int imageSize, int imageHeight)
-        {
-            int currentStartx = currentRow*pixelSquareDensity;
-
-            for (int i = 0; i < imageSize; i++)
-            {
-                for (int j = 0; j < pixelSquareDensity; j++)
-                {
-                    Colours colour = (Colours) Convert.ToInt32(currentChar);
-                    string strColour = colour.ToString();
-                    graph.SetPixel(currentStartx + i, currentRow + j, Color.FromName(strColour));
+                    if (c != '\n' && count != 10)
+                    {
+                        Colours colour = (Colours)(c - '0');
+                        string strColour = colour.ToString();
+                        //Console.WriteLine(count);
+                        graph.SetPixel(count, i, Color.FromName(strColour));
+                        count++;
+                    }
                 }
             }
 
